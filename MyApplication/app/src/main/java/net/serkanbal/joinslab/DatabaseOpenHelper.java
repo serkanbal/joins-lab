@@ -2,8 +2,12 @@ package net.serkanbal.joinslab;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Serkan on 28/10/16.
@@ -14,7 +18,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     public static final String COL_SSN = "SSN";
     public static final String COL_FIRST_NAME = "First";
     public static final String COL_LAST_NAME = "Last";
-    public static final String COL_YEAR_OF_BIRTH = "year of birth";
+    public static final String COL_YEAR_OF_BIRTH = "YearOfBirth";
     public static final String COL_CITY = "city";
 
     public static final String CREATE_EMPLOYEE_TABLE = "CREATE TABLE " +
@@ -28,7 +32,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     public static final String DROP_EMPLOYEE = "DROP TABLE IF EXISTS " + EMPLOYEE_TABLE_NAME;
 
     public static final String JOB_TABLE_NAME = "Job";
-    public static final String COL_SSN_JOB = "SSN";
+    public static final String COL_SSN_JOB = "SSNJob";
     public static final String COL_COMPANY = "Company";
     public static final String COL_SALARY = "Salary";
     public static final String COL_EXPERIENCE = "Experience";
@@ -37,8 +41,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
             JOB_TABLE_NAME + " (" +
             COL_SSN_JOB + " INTEGER PRIMARY KEY," +
             COL_COMPANY + " TEXT," +
-            COL_SALARY + "INT," +
-            COL_EXPERIENCE + "INT)";
+            COL_SALARY + " INT," +
+            COL_EXPERIENCE + " INT)";
 
     public static final String DROP_JOB = "DROP TABLE IF EXISTS " + JOB_TABLE_NAME;
 
@@ -47,13 +51,13 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    private static DatabaseOpenHelper sIntance;
+    private static DatabaseOpenHelper sInstance;
 
-    public static DatabaseOpenHelper getInstance(Context context) {
-        if (sIntance == null) {
-            sIntance = new DatabaseOpenHelper(context.getApplicationContext());
+    public static synchronized DatabaseOpenHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new DatabaseOpenHelper(context.getApplicationContext());
         }
-    return sIntance;
+    return sInstance;
     }
 
     @Override
@@ -88,5 +92,33 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         values.put(COL_SALARY, jobObject.getSalary());
         values.put(COL_EXPERIENCE, jobObject.getExperience());
         db.insertOrThrow(JOB_TABLE_NAME, null, values);
+    }
+
+    public List<String> getAllInfo() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT " + COL_FIRST_NAME + ", " + COL_LAST_NAME + ", " +
+                COL_YEAR_OF_BIRTH + ", " + COL_CITY + ", " + COL_COMPANY + ", " +
+                COL_SALARY + ", " + COL_EXPERIENCE + " FROM " + EMPLOYEE_TABLE_NAME + " JOIN " +
+                JOB_TABLE_NAME + " ON " + EMPLOYEE_TABLE_NAME + "." + COL_SSN + " = " +
+                JOB_TABLE_NAME + "." + COL_SSN_JOB;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<String> allInfo = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                allInfo.add(cursor.getString(cursor.getColumnIndex(COL_FIRST_NAME)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_LAST_NAME)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_YEAR_OF_BIRTH)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_CITY)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_COMPANY)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_SALARY)) + " - " +
+                cursor.getString(cursor.getColumnIndex(COL_EXPERIENCE)));
+                cursor.moveToNext();
+            }
+        }cursor.close();
+    return allInfo;
     }
 }

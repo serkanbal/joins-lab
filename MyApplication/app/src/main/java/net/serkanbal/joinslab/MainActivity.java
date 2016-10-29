@@ -1,14 +1,24 @@
 package net.serkanbal.joinslab;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private RecyclerView mRecyclerView;
+    private JoinsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL,false));
 
         DatabaseOpenHelper databaseOpenHelper = DatabaseOpenHelper.getInstance(MainActivity.this);
 
@@ -47,8 +57,11 @@ public class MainActivity extends AppCompatActivity {
         databaseOpenHelper.insertJob(j6);
         databaseOpenHelper.insertJob(j7);
         databaseOpenHelper.insertJob(j8);
+
+        List<String> allInfo = databaseOpenHelper.getAllInfo();
+        mAdapter = new JoinsAdapter(allInfo);
+        mRecyclerView.setAdapter(mAdapter);
+
     }
-
-
 
 }
