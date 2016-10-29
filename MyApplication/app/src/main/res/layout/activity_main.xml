@@ -12,6 +12,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="net.serkanbal.joinslab.MainActivity">
 
+    <Button
+        android:id="@+id/buttonsamecompany"
+        android:text="Employees working at the same company"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/buttonboston"
+        android:text="Companies in Boston"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/buttonsalary"
+        android:text="Employee with Highest Salary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"

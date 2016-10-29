@@ -121,4 +121,70 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         }cursor.close();
     return allInfo;
     }
+
+    public List<String> getSameCompany() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT " + COL_FIRST_NAME + ", " + COL_LAST_NAME + " FROM " +
+                JOB_TABLE_NAME + " JOIN " + EMPLOYEE_TABLE_NAME + " ON " +
+                EMPLOYEE_TABLE_NAME + "." + COL_SSN + " = " + JOB_TABLE_NAME + "." + COL_SSN_JOB +
+                " WHERE " + COL_COMPANY + " LIKE 'macy%'";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<String> sameCompany = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                sameCompany.add(cursor.getString(cursor.getColumnIndex(COL_FIRST_NAME)) + " " +
+                        cursor.getString(cursor.getColumnIndex(COL_LAST_NAME)));
+                cursor.moveToNext();
+            }
+        }cursor.close();
+        return sameCompany;
+    }
+
+    public List<String> getBostonCompanies() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT " + COL_COMPANY + " FROM " +
+                JOB_TABLE_NAME + " JOIN " + EMPLOYEE_TABLE_NAME + " ON " +
+                EMPLOYEE_TABLE_NAME + "." + COL_SSN + " = " + JOB_TABLE_NAME + "." + COL_SSN_JOB +
+                " WHERE " + COL_CITY + " = 'Boston'";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<String> bostonCompanies = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                bostonCompanies.add(cursor.getString(cursor.getColumnIndex(COL_COMPANY)));
+                cursor.moveToNext();
+            }
+        }cursor.close();
+        return bostonCompanies;
+    }
+
+    public List<String> getHighestSalary() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT " + COL_FIRST_NAME + ", " + COL_LAST_NAME + " FROM " +
+                JOB_TABLE_NAME + " JOIN " + EMPLOYEE_TABLE_NAME + " ON " +
+                EMPLOYEE_TABLE_NAME + "." + COL_SSN + " = " + JOB_TABLE_NAME + "." + COL_SSN_JOB +
+                " ORDER BY " + COL_SALARY + " DESC LIMIT 1";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<String> highestSalary = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                highestSalary.add(cursor.getString(cursor.getColumnIndex(COL_FIRST_NAME)) + " " +
+                        cursor.getString(cursor.getColumnIndex(COL_LAST_NAME)));
+                cursor.moveToNext();
+            }
+        }cursor.close();
+        return highestSalary;
+    }
+
 }
